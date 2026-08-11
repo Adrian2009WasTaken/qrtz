@@ -70,6 +70,27 @@ int main(int argc, char *argv[]) {
       int res = a - b;
       char buffer[32];
       sprintf(buffer, "%d", res);
+      strcpy(STACK_RR[regrr], buffer);
+    } else if (strcmp(opcode, "ADD_R") == 0) {
+      int regrr = atoi(tok3);
+      int reg1 = atoi(tok1);
+      int reg2 = atoi(tok2);
+      int *val1 = STACK_RE[reg1];
+      int *val2 = STACK_RE[reg2];
+      int res = val1 + val2;
+      char buffer[32];
+      sprintf(buffer, "%d", res);
+      strcpy(STACK_RR[regrr], buffer);
+    } else if (strcmp(opcode, "SUB_R") == 0) {
+      int regrr = atoi(tok3);
+      int reg1 = atoi(tok1);
+      int reg2 = atoi(tok2);
+      int *val1 = STACK_RE[reg1];
+      int *val2 = STACK_RE[reg2];
+      int res = val1 + val2;
+      char buffer[32];
+      sprintf(buffer, "%d", res);
+      strcpy(STACK_RE[regrr], buffer);
     }
   }
 }
