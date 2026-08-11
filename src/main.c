@@ -46,6 +46,15 @@ int main(int argc, char *argv[]) {
     } else if (strcmp(opcode, "PULL") == 0) {
       int reg = atoi(tok1);
       printf("%s\n", STACK_RE[reg]);
-    } else if (strcmp)
+    } else if (strcmp(opcode, "PULL_R") == 0) {
+      int reg = atoi(tok1);
+      printf("%s\n", STACK_RR[reg]);
+    } else if (strcmp(opcode, "PURGE") == 0) {
+      int reg = atoi(tok1);
+      strcpy(STACK_RE[reg], "NULL");
+    } else if (strcmp(opcode, "PURGE_R") == 0) {
+      int reg = atoi(tok1);
+      strcpy(STACK_RR[reg], "NULL");
+    }
   }
 }
