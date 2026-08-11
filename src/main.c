@@ -57,12 +57,19 @@ int main(int argc, char *argv[]) {
       strcpy(STACK_RR[reg], "NULL");
     } else if (strcmp(opcode, "ADD") == 0) {
       int regrr = atoi(tok3);
-      int reg_a = atoi(tok1);
-      int reg_b = atoi(tok2);
-      int rr = reg_a + reg_b;
+      int a     = atoi(tok1);
+      int b     = atoi(tok2);
+      int res = a + b;
       char buffer[32];
-      sprintf(buffer, "%d", rr);
+      sprintf(buffer, "%d", res);
       strcpy(STACK_RR[regrr], buffer);
+    } else if (strcmp(opcode, "SUB") == 0) {
+      int regrr = atoi(tok3);
+      int a     = atoi(tok1);
+      int b     = atoi(tok2);
+      int res = a - b;
+      char buffer[32];
+      sprintf(buffer, "%d", res);
     }
   }
 }
