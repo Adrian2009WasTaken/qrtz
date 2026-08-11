@@ -55,6 +55,14 @@ int main(int argc, char *argv[]) {
     } else if (strcmp(opcode, "PURGE_R") == 0) {
       int reg = atoi(tok1);
       strcpy(STACK_RR[reg], "NULL");
+    } else if (strcmp(opcode, "ADD") == 0) {
+      int regrr = atoi(tok3);
+      int reg_a = atoi(tok1);
+      int reg_b = atoi(tok2);
+      int rr = reg_a + reg_b;
+      char buffer[32];
+      sprintf(buffer, "%d", rr);
+      strcpy(STACK_RR[regrr], buffer);
     }
   }
 }
