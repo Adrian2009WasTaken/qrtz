@@ -14,11 +14,13 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
+  // Arithmetic registers
   char STACK_RE[8][32] = {"NULL", "NULL",
                           "NULL", "NULL",
                           "NULL", "NULL",
                           "NULL", "NULL"};
 
+  // Result registers
   char STACK_RR[8][32] = {"NULL", "NULL",
                           "NULL", "NULL",
                           "NULL", "NULL",
@@ -95,6 +97,23 @@ int main(int argc, char *argv[]) {
       char buffer[32];
       sprintf(buffer, "%d", res);
       strcpy(STACK_RR[regrr], buffer);
+    } else if (strcmp(opcode, "INC") == 0) {
+      int dreg = atoi(tok1);
+      int tempval = atoi(STACK_RE[dreg]);
+      int increment = atoi(tok2);
+      if (tok2 != NULL) {
+        int incval = tempval + increment;
+        char final[32];
+        snprintf(final, sizeof(final), "%d\n", incval);
+        final[strcspn(final, "\n")] = '\0';
+        strcpy(STACK_RE[dreg], final);
+      } else {
+        int incval = tempval++;
+        char final[32];
+        final[strcspn(final, "\n")] = '\0';
+        snprintf(final, sizeof(final), "%d\n", incval);
+        strcpy(STACK_RE[dreg], final);
+      }
     }
   }
 }
