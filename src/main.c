@@ -52,6 +52,10 @@ int main(int argc, char *argv[]) {
     } else if (strcmp(opcode, "PURGE") == 0) {
       int reg = atoi(tok1);
       strcpy(STACK_RE[reg], "NULL");
+    } else if (strcmp(opcode, "HALT") == 0) {
+      int exitcode = atoi(tok1);
+      printf("Virtual machine exited with return code %d\n", exitcode);
+      return exitcode;
     } else if (strcmp(opcode, "PURGE_R") == 0) {
       int reg = atoi(tok1);
       strcpy(STACK_RR[reg], "NULL");
