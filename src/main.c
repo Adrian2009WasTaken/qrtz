@@ -100,18 +100,18 @@ int main(int argc, char *argv[]) {
     } else if (strcmp(opcode, "INC") == 0) {
       int dreg = atoi(tok1);
       int tempval = atoi(STACK_RE[dreg]);
-      int increment = atoi(tok2);
       if (tok2 != NULL) {
+        int increment = atoi(tok2);
         int incval = tempval + increment;
         char final[32];
         snprintf(final, sizeof(final), "%d\n", incval);
         final[strcspn(final, "\n")] = '\0';
         strcpy(STACK_RE[dreg], final);
       } else {
-        int incval = tempval++;
+        int incval = tempval + 1;
         char final[32];
-        final[strcspn(final, "\n")] = '\0';
         snprintf(final, sizeof(final), "%d\n", incval);
+        final[strcspn(final, "\n")] = '\0';
         strcpy(STACK_RE[dreg], final);
       }
     }
