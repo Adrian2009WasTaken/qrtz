@@ -75,8 +75,8 @@ int main(int argc, char *argv[]) {
       int regrr = atoi(tok3);
       int reg1 = atoi(tok1);
       int reg2 = atoi(tok2);
-      int *val1 = STACK_RE[reg1];
-      int *val2 = STACK_RE[reg2];
+      int val1 = atoi(STACK_RE[reg1]);
+      int val2 = atoi(STACK_RE[reg2]);
       int res = val1 + val2;
       char buffer[32];
       sprintf(buffer, "%d", res);
@@ -85,12 +85,12 @@ int main(int argc, char *argv[]) {
       int regrr = atoi(tok3);
       int reg1 = atoi(tok1);
       int reg2 = atoi(tok2);
-      int *val1 = STACK_RE[reg1];
-      int *val2 = STACK_RE[reg2];
-      int res = val1 + val2;
+      int val1 = atoi(STACK_RE[reg1]);
+      int val2 = atoi(STACK_RE[reg2]);
+      int res = val1 - val2;
       char buffer[32];
       sprintf(buffer, "%d", res);
-      strcpy(STACK_RE[regrr], buffer);
+      strcpy(STACK_RR[regrr], buffer);
     }
   }
 }
