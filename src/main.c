@@ -112,6 +112,12 @@ int main(int argc, char *argv[]) {
         printf("FATAL ERROR: Attempted to decrement $R%d but $R%d is NULL!\n", dreg, dreg);
         return 1;
       }
+    } else if (strcmp(opcode, "CMRR") == 0) {
+      int srcreg  = atoi(tok1);
+      int destreg = atoi(tok2);
+      if (!STACK_RR[srcreg].is_null) {
+        STACK_RR[destreg].value = STACK_RR[srcreg].value;
+      }
     }
   }
 }
