@@ -117,6 +117,9 @@ int main(int argc, char *argv[]) {
       int destreg = atoi(tok2);
       if (!STACK_RR[srcreg].is_null) {
         STACK_RR[destreg].value = STACK_RR[srcreg].value;
+        if (STACK_RR[destreg].is_null) {
+          STACK_RR[destreg].is_null = false;
+        }
       }
     }
   }
