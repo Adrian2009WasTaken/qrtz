@@ -47,6 +47,9 @@ int main(int argc, char *argv[]) {
       if (STACK_RR[reg].is_null) {
         printf("[NULL]");
       } else { printf("%d\n", STACK_RR[reg].value); }
+    } else if (strcmp(opcode, "PRNT") == 0) {
+      int ascii_code = atoi(tok1);
+      putchar(ascii_code);
     } else if (strcmp(opcode, "PURGE") == 0) {
       int reg = atoi(tok1);
       STACK_RR[reg].value = 0;
