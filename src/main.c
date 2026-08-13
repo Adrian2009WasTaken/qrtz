@@ -1,6 +1,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdint.h>
+#include <stdbool.h>
 
 int main(int argc, char *argv[]) {
   if (argc != 2) {
@@ -14,17 +16,13 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-  // Arithmetic registers
-  char STACK_RE[8][32] = {"NULL", "NULL",
-                          "NULL", "NULL",
-                          "NULL", "NULL",
-                          "NULL", "NULL"};
+  // Create a stack of 16 registers
+  typedef struct {
+    uint32_t value;
+    bool is_null;
+  } GRegister;
 
-  // Result registers
-  char STACK_RR[8][32] = {"NULL", "NULL",
-                          "NULL", "NULL",
-                          "NULL", "NULL",
-                          "NULL", "NULL"};
+  GRegister STACK_RR[16] = {0};
 
   char line[32];
   while (fgets(line, sizeof(line), program) != NULL) {
@@ -37,82 +35,82 @@ int main(int argc, char *argv[]) {
       int value = atoi(tok1);
       int reg   = atoi(tok2);
 
-      if (strcmp(STACK_RE[reg], "NULL") == 0) {
-        char buffer[32];
-        sprintf(buffer, "%d", value);
-        strcpy(STACK_RE[reg], buffer);
+      if (!STACK_RR[reg].is_null) {
+        STACK_RR[reg].value = value;
+        STACK_RR[reg].is_null = false;
       } else {
-        printf("FATAL ERROR: Register %d is occupied!", reg);
+        printf("FATAL ERROR: Attempted to write to $R%d but $R%d is occupied!\n", reg, reg);
         return 1;
       }
     } else if (strcmp(opcode, "PULL") == 0) {
       int reg = atoi(tok1);
-      printf("%s\n", STACK_RE[reg]);
-    } else if (strcmp(opcode, "PULL_R") == 0) {
-      int reg = atoi(tok1);
-      printf("%s\n", STACK_RR[reg]);
+      if (STACK_RR[reg].is_null) {
+        printf("[NULL]");
+      } else { printf("%d\n", STACK_RR[reg].value); }
     } else if (strcmp(opcode, "PURGE") == 0) {
       int reg = atoi(tok1);
-      strcpy(STACK_RE[reg], "NULL");
+      STACK_RR[reg].value = 0;
+      STACK_RR[reg].is_null = true;
     } else if (strcmp(opcode, "HALT") == 0) {
-      int exitcode = atoi(tok1);
-      printf("Virtual machine exited with return code %d\n", exitcode);
-      return exitcode;
-    } else if (strcmp(opcode, "PURGE_R") == 0) {
-      int reg = atoi(tok1);
-      strcpy(STACK_RR[reg], "NULL");
+      if (tok1 != NULL) {
+        int exitcode = atoi(tok1);
+        printf("Virtual machine exited with code %d\n", exitcode);
+        return exitcode;
+      } else {
+        printf("Virtual machine exited with code 0.\n");
+        return 0;
+      }
     } else if (strcmp(opcode, "ADD") == 0) {
       int regrr = atoi(tok3);
       int a     = atoi(tok1);
       int b     = atoi(tok2);
       int res = a + b;
-      char buffer[32];
-      sprintf(buffer, "%d", res);
-      strcpy(STACK_RR[regrr], buffer);
+      STACK_RR[regrr].value = res;
+      STACK_RR[regrr].is_null = false;
     } else if (strcmp(opcode, "SUB") == 0) {
       int regrr = atoi(tok3);
       int a     = atoi(tok1);
       int b     = atoi(tok2);
       int res = a - b;
-      char buffer[32];
-      sprintf(buffer, "%d", res);
-      strcpy(STACK_RR[regrr], buffer);
+      STACK_RR[regrr].value = res;
+      STACK_RR[regrr].is_null = false;
     } else if (strcmp(opcode, "ADD_R") == 0) {
       int regrr = atoi(tok3);
       int reg1 = atoi(tok1);
       int reg2 = atoi(tok2);
-      int val1 = atoi(STACK_RE[reg1]);
-      int val2 = atoi(STACK_RE[reg2]);
+      int val1 = STACK_RR[reg1].value;
+      int val2 = STACK_RR[reg2].value;
       int res = val1 + val2;
-      char buffer[32];
-      sprintf(buffer, "%d", res);
-      strcpy(STACK_RR[regrr], buffer);
+      STACK_RR[regrr].value = res;
+      STACK_RR[regrr].is_null = false;
     } else if (strcmp(opcode, "SUB_R") == 0) {
       int regrr = atoi(tok3);
       int reg1 = atoi(tok1);
       int reg2 = atoi(tok2);
-      int val1 = atoi(STACK_RE[reg1]);
-      int val2 = atoi(STACK_RE[reg2]);
+      int val1 = STACK_RR[reg1].value;
+      int val2 = STACK_RR[reg2].value;
       int res = val1 - val2;
-      char buffer[32];
-      sprintf(buffer, "%d", res);
-      strcpy(STACK_RR[regrr], buffer);
+      STACK_RR[regrr].value = res;
+      STACK_RR[regrr].is_null = false;
     } else if (strcmp(opcode, "INC") == 0) {
       int dreg = atoi(tok1);
-      int tempval = atoi(STACK_RE[dreg]);
       if (tok2 != NULL) {
         int increment = atoi(tok2);
-        int incval = tempval + increment;
-        char final[32];
-        snprintf(final, sizeof(final), "%d\n", incval);
-        final[strcspn(final, "\n")] = '\0';
-        strcpy(STACK_RE[dreg], final);
+        STACK_RR[dreg].value += increment;
+        STACK_RR[dreg].is_null = false;
       } else {
-        int incval = tempval + 1;
-        char final[32];
-        snprintf(final, sizeof(final), "%d\n", incval);
-        final[strcspn(final, "\n")] = '\0';
-        strcpy(STACK_RE[dreg], final);
+        STACK_RR[dreg].value++;
+      }
+    } else if (strcmp(opcode, "DEC") == 0) {
+      int dreg = atoi(tok1);
+      if (tok2 != NULL && !STACK_RR[dreg].is_null) {
+        int decrement = atoi(tok2);
+        STACK_RR[dreg].value -= decrement;
+      } else if (tok2 == NULL && !STACK_RR[dreg].is_null) {
+        STACK_RR[dreg].value -= 1;
+      } else if (STACK_RR[dreg].is_null) {
+        printf("FATAL ERROR: Attempted to decrement $R%d but $R%d is NULL!\n", dreg, dreg);
+        return 1;
       }
     }
   }
