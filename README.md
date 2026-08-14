@@ -1,10 +1,11 @@
-# semiT
+# qrtz
 Super simple programming language I made to learn how programming languages work, but I also made it to learn more about CPU ISAs (therefore I technically created a virtual machine with it's own little ISA).
 
 Several opcodes are available now:
 
 > PUSH  
 PULL  
+PRNT  
 PURGE  
 ADD  
 ADD_R  
