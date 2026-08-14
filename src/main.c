@@ -30,14 +30,14 @@ int main(int argc, char *argv[]) {
   // framebuffer of res 20x40 ONLY if vm is run
   // with --display tag.
   bool display;
-  int dpresx;
   int dpresy;
+  int dpresx;
   if (argc >= 5 && strcmp(argv[2], "--display") == 0) {
-    dpresx = atoi(argv[3]);
-    dpresy = atoi(argv[4]);
+    dpresy = atoi(argv[3]);
+    dpresx = atoi(argv[4]);
     display = true;
   } else { display = false; }
-  bool displayfb[dpresx][dpresy];
+  bool displayfb[dpresy][dpresx];
   memset(displayfb, 0, sizeof(displayfb));
   // ^ Clear garbage from framebuffer
 
@@ -152,12 +152,13 @@ int main(int argc, char *argv[]) {
       nanosleep(&dur, NULL);
       continue;
     } else if (strcmp(opcode, "DPFB") == 0) {
-      int x = atoi(tok1);
-      int y = atoi(tok2);
+      int y = atoi(tok1);
+      int x = atoi(tok2);
       if (display) {
-        if (displayfb[x][y] == true) {
-          displayfb[x][y] = false; 
-        } else { displayfb[x][y] = true; }
+        if (displayfb[y][x] == true) {
+          displayfb[y][x] = false;
+        } else { displayfb[y][x] = true; }
+        render_display(dpresx, dpresy, displayfb);
       } else {
         printf("VM not initialized with display. ");
         printf("Can not use DISPLAY instruction 'DPFB'! ");
@@ -169,10 +170,9 @@ int main(int argc, char *argv[]) {
       continue;
     }
   }
-  render_display(dpresy, dpresx, displayfb);
 }
 
-void render_display(int dpresy, int dpresx, bool displayfb[dpresy][dpresx]) {
+void render_display(int dpresx, int dpresy, bool displayfb[dpresy][dpresx]) {
   for (int y = 0; y < dpresy; y++) {
     for (int x = 0; x < dpresx; x++) {
       if (displayfb[y][x]) {
@@ -183,4 +183,5 @@ void render_display(int dpresy, int dpresx, bool displayfb[dpresy][dpresx]) {
     }
     printf("\n");
   }
+  printf("\n");
 }
