@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <time.h>
+#include "include.h"
 
 int main(int argc, char *argv[]) {
   if (argc < 2) {
@@ -31,15 +32,18 @@ int main(int argc, char *argv[]) {
   bool display;
   int dpresx;
   int dpresy;
-  bool displayfb[dpresy][dpresx];
   if (argc >= 5 && strcmp(argv[2], "--display") == 0) {
     dpresx = atoi(argv[3]);
     dpresy = atoi(argv[4]);
     display = true;
   } else { display = false; }
+  bool displayfb[dpresx][dpresy];
+  memset(displayfb, 0, sizeof(displayfb));
+  // ^ Clear garbage from framebuffer
 
   char line[32];
   while (fgets(line, sizeof(line), program) != NULL) {
+    if (line[0] == '\n' || line[0] == '\0') continue;
     char *opcode = strtok(line, " \t\n");
     char *tok1   = strtok(NULL, " \t\n");
     char *tok2   = strtok(NULL, " \t\n");
@@ -161,6 +165,22 @@ int main(int argc, char *argv[]) {
         printf("VM exited with code [1]\n");
         return 1;
       }
+    } else if (strcmp(opcode, "//") == 0) {
+      continue;
     }
+  }
+  render_display(dpresy, dpresx, displayfb);
+}
+
+void render_display(int dpresy, int dpresx, bool displayfb[dpresy][dpresx]) {
+  for (int y = 0; y < dpresy; y++) {
+    for (int x = 0; x < dpresx; x++) {
+      if (displayfb[y][x]) {
+          printf("\033[47m  \033[0m"); 
+      } else {
+          printf("\033[40m  \033[0m"); 
+      }
+    }
+    printf("\n");
   }
 }
