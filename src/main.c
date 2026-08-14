@@ -3,9 +3,10 @@
 #include <string.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <time.h>
 
 int main(int argc, char *argv[]) {
-  if (argc != 2) {
+  if (argc < 2) {
     printf("No file argument!\n");
     exit(1);
   }
@@ -23,6 +24,19 @@ int main(int argc, char *argv[]) {
   } GRegister;
 
   GRegister STACK_RR[16] = {0};
+
+  // Create an emulated boolean display
+  // framebuffer of res 20x40 ONLY if vm is run
+  // with --display tag.
+  bool display;
+  int dpresx;
+  int dpresy;
+  bool displayfb[dpresy][dpresx];
+  if (argc >= 5 && strcmp(argv[2], "--display") == 0) {
+    dpresx = atoi(argv[3]);
+    dpresy = atoi(argv[4]);
+    display = true;
+  } else { display = false; }
 
   char line[32];
   while (fgets(line, sizeof(line), program) != NULL) {
@@ -43,11 +57,13 @@ int main(int argc, char *argv[]) {
         return 1;
       }
     } else if (strcmp(opcode, "PULL") == 0) {
+      if (display) continue;
       int reg = atoi(tok1);
       if (STACK_RR[reg].is_null) {
         printf("[NULL]");
       } else { printf("%d\n", STACK_RR[reg].value); }
     } else if (strcmp(opcode, "PRNT") == 0) {
+      if (display) continue;
       int ascii_code = atoi(tok1);
       putchar(ascii_code);
     } else if (strcmp(opcode, "PURGE") == 0) {
@@ -123,6 +139,27 @@ int main(int argc, char *argv[]) {
         if (STACK_RR[destreg].is_null) {
           STACK_RR[destreg].is_null = false;
         }
+      }
+    } else if (strcmp(opcode, "WAIT") == 0) {
+      float seconds = atof(tok1);
+      struct timespec dur;
+      dur.tv_sec = (time_t)seconds;
+      dur.tv_nsec = (long)((seconds - dur.tv_sec) * 1000000000L);
+      nanosleep(&dur, NULL);
+      continue;
+    } else if (strcmp(opcode, "DPFB") == 0) {
+      int x = atoi(tok1);
+      int y = atoi(tok2);
+      if (display) {
+        if (displayfb[x][y] == true) {
+          displayfb[x][y] = false; 
+        } else { displayfb[x][y] = true; }
+      } else {
+        printf("VM not initialized with display. ");
+        printf("Can not use DISPLAY instruction 'DPFB'! ");
+        printf("Run VM with --display to enable display.\n");
+        printf("VM exited with code [1]\n");
+        return 1;
       }
     }
   }
