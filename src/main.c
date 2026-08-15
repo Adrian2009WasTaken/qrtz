@@ -24,7 +24,7 @@ int main(int argc, char *argv[]) {
     bool is_null;
   } GRegister;
 
-  GRegister STACK_RR[16] = {0};
+  GRegister STACK_RR[16] = { [0 ... 15] = { .value = 0, .is_null = true } };
 
   // Create an emulated boolean display
   // framebuffer of res 20x40 ONLY if vm is run
@@ -53,11 +53,11 @@ int main(int argc, char *argv[]) {
       int value = atoi(tok1);
       int reg   = atoi(tok2);
 
-      if (!STACK_RR[reg].is_null) {
+      if (STACK_RR[reg].is_null) {
         STACK_RR[reg].value = value;
         STACK_RR[reg].is_null = false;
       } else {
-        printf("FATAL ERROR: Attempted to write to $R%d but $R%d is occupied!\n", reg, reg);
+        printf("ERROR: Attempted to write to $R%d but $R%d is occupied!\n", reg, reg);
         return 1;
       }
     } else if (strcmp(opcode, "PULL") == 0) {
