@@ -17,12 +17,8 @@ WAIT
 DPFB  
 CMRR  
 HALT  
-
-Nice cool stuff I may implement:
-
-+ MUL and DIV opcodes.
-
-+ Possibly a JZ and JNZ opcodes to get closer to Turing completeness. This means I will have to implement an instruction pointer which I have no idea on how to do for now.
+COMP  
+JPFE  
 
 I recently added an emulated display, enabled by running the vm using `qrtz program.qz --display x y`. x & y are the display resolutions. When running with --display, console instructions like PRNT and PULL will not work. Pixels in the display are either on or off. To toggle a pixel, you'd use the `DPFB x y` instruction, toggling the pixel at that xy position.
 
@@ -32,13 +28,20 @@ TODO:
   printing to stdout like you'd 
   print `hello world`.
 
-  Add instruction pointer, CMP register,
-  and JE/JNE instructions.
+  MULL & DIV opcodes.
+
+  Memory Management Unit + Variables
 
   Add labels.
 
   Add clear display instruction (CLDP)
   that toggles all pixels in the display
   off.
+
+  Improve the PRNT function or optionally    merge PULL with PRNT.
+
+  Basic conditional jumps have been added,   however more conditional jump options      must be added: JPFN, JFZ, JFNZ and a few   others. Loops work already, but the        entire instruction pointer system should   be improved. Currently POC.
+
+  Migrate display functions into display.c
 
 ## If you want to help/contribute, you can either do so by helping to implement something from the TODO above, or simply improving this README.
