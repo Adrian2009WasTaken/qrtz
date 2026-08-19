@@ -18,11 +18,13 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-  // Create a stack of 16 registers
+  // Create a stack of 16 registers 
+  // and a special JPNF register
   typedef struct {
     uint32_t value;
     bool is_null;
   } GRegister;
+  bool equal = false;
 
   GRegister STACK_RR[16] = { [0 ... 15] = { .value = 0, .is_null = true } };
 
@@ -41,6 +43,9 @@ int main(int argc, char *argv[]) {
   memset(displayfb, 0, sizeof(displayfb));
   // ^ Clear garbage from framebuffer
 
+  // Create 32 byte line buffer and instruction pointer
+  int jptr = 0;
+  int iptr = 0;
   char line[32];
   while (fgets(line, sizeof(line), program) != NULL) {
     if (line[0] == '\n' || line[0] == '\0') continue;
@@ -48,6 +53,14 @@ int main(int argc, char *argv[]) {
     char *tok1   = strtok(NULL, " \t\n");
     char *tok2   = strtok(NULL, " \t\n");
     char *tok3   = strtok(NULL, " \t\n");
+
+    if (strcmp(opcode, "JPFE") == 0) {
+      if (equal) {
+        fseek(program, atoi(tok1), SEEK_SET);
+      }
+      equal = false;
+      continue;
+    }
 
     if (strcmp(opcode, "PUSH") == 0) {
       int value = atoi(tok1);
@@ -144,6 +157,13 @@ int main(int argc, char *argv[]) {
           STACK_RR[destreg].is_null = false;
         }
       }
+    } else if (strcmp(opcode, "COMP") == 0) {
+      int val1 = atoi(tok1);
+      int val2 = atoi(tok2);
+      int result = val1 - val2;
+      if (result == 0) {
+        equal = true;
+      } else { equal = false; }
     } else if (strcmp(opcode, "WAIT") == 0) {
       float seconds = atof(tok1);
       struct timespec dur;
