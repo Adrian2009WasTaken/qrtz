@@ -29,15 +29,21 @@ int main(int argc, char *argv[]) {
   GRegister STACK_RR[16] = { [0 ... 15] = { .value = 0, .is_null = true } };
 
   // Create an emulated boolean display
-  // framebuffer of res 20x40 ONLY if vm is run
+  // framebuffer of variable res ONLY if vm is run
   // with --display tag.
   bool display;
+  char backend[16];
   int dpresy;
   int dpresx;
   if (argc >= 5 && strcmp(argv[2], "--display") == 0) {
     dpresy = atoi(argv[3]);
     dpresx = atoi(argv[4]);
     display = true;
+    if (strcmp("unicode", argv[5]) == 0) {
+      memcpy(&backend, "unicode", sizeof(backend));
+    } else if (strcmp("ansi", argv[5]) == 0) {
+      memcpy(&backend, "ansi", sizeof(backend));
+    } else { memcpy(&backend, "default", sizeof(backend)); }
   } else { display = false; }
   bool displayfb[dpresy][dpresx];
   memset(displayfb, 0, sizeof(displayfb));
@@ -178,7 +184,7 @@ int main(int argc, char *argv[]) {
         if (displayfb[y][x] == true) {
           displayfb[y][x] = false;
         } else { displayfb[y][x] = true; }
-        render_display(dpresx, dpresy, displayfb);
+        render_display(backend, dpresx, dpresy, displayfb);
       } else {
         printf("VM not initialized with display. ");
         printf("Can not use DISPLAY instruction 'DPFB'! ");
