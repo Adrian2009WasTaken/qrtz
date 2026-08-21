@@ -49,10 +49,10 @@ int main(int argc, char *argv[]) {
   memset(displayfb, 0, sizeof(displayfb));
   // ^ Clear garbage from framebuffer
 
-  // Create 32 byte line buffer and instruction pointer
-  int jptr = 0;
+  // Create 32 byte line buffer and instruction pointerr
   int iptr = 0;
   char line[32];
+
   while (fgets(line, sizeof(line), program) != NULL) {
     if (line[0] == '\n' || line[0] == '\0') continue;
     char *opcode = strtok(line, " \t\n");
@@ -60,11 +60,19 @@ int main(int argc, char *argv[]) {
     char *tok2   = strtok(NULL, " \t\n");
     char *tok3   = strtok(NULL, " \t\n");
 
-    if (strcmp(opcode, "JPFE") == 0) {
-      if (equal) {
-        fseek(program, atoi(tok1), SEEK_SET);
-      }
+    if (strcmp(opcode, "JPEQ") == 0) {
+      iptr = atoi(tok1);
       equal = false;
+      set_ip(iptr, program);
+      continue;
+    }
+    else if (strcmp(opcode, "JREQ") == 0) {
+      int regrr = atoi(tok1);
+      int value = atoi(tok2);
+      if (STACK_RR[regrr].value == value) {
+        iptr = value;
+        set_ip(iptr, program);
+      }
       continue;
     }
 
@@ -77,29 +85,38 @@ int main(int argc, char *argv[]) {
         STACK_RR[reg].is_null = false;
       } else {
         printf("ERROR: Attempted to write to $R%d but $R%d is occupied!\n", reg, reg);
+        iptr++;
         return 1;
       }
+      iptr++;
+    } else if (strcmp(opcode, "JREQ") == 0) {
+      iptr++;
     } else if (strcmp(opcode, "PULL") == 0) {
       if (display) continue;
       int reg = atoi(tok1);
       if (STACK_RR[reg].is_null) {
         printf("[NULL]");
       } else { printf("%d\n", STACK_RR[reg].value); }
+      iptr++;
     } else if (strcmp(opcode, "PRNT") == 0) {
       if (display) continue;
       int ascii_code = atoi(tok1);
       putchar(ascii_code);
+      iptr++;
     } else if (strcmp(opcode, "PURGE") == 0) {
       int reg = atoi(tok1);
       STACK_RR[reg].value = 0;
       STACK_RR[reg].is_null = true;
+      iptr++;
     } else if (strcmp(opcode, "HALT") == 0) {
       if (tok1 != NULL) {
         int exitcode = atoi(tok1);
-        printf("Virtual machine exited with code %d\n", exitcode);
+        printf("\nVirtual machine exited with code %d\n", exitcode);
+        iptr++;
         return exitcode;
       } else {
-        printf("Virtual machine exited with code 0.\n");
+        printf("\nVirtual machine exited with code 0.\n");
+        iptr++;
         return 0;
       }
     } else if (strcmp(opcode, "ADD") == 0) {
@@ -109,6 +126,7 @@ int main(int argc, char *argv[]) {
       int res = a + b;
       STACK_RR[regrr].value = res;
       STACK_RR[regrr].is_null = false;
+      iptr++;
     } else if (strcmp(opcode, "SUB") == 0) {
       int regrr = atoi(tok3);
       int a     = atoi(tok1);
@@ -116,6 +134,7 @@ int main(int argc, char *argv[]) {
       int res = a - b;
       STACK_RR[regrr].value = res;
       STACK_RR[regrr].is_null = false;
+      iptr++;
     } else if (strcmp(opcode, "ADD_R") == 0) {
       int regrr = atoi(tok3);
       int reg1 = atoi(tok1);
@@ -125,6 +144,7 @@ int main(int argc, char *argv[]) {
       int res = val1 + val2;
       STACK_RR[regrr].value = res;
       STACK_RR[regrr].is_null = false;
+      iptr++;
     } else if (strcmp(opcode, "SUB_R") == 0) {
       int regrr = atoi(tok3);
       int reg1 = atoi(tok1);
@@ -134,6 +154,7 @@ int main(int argc, char *argv[]) {
       int res = val1 - val2;
       STACK_RR[regrr].value = res;
       STACK_RR[regrr].is_null = false;
+      iptr++;
     } else if (strcmp(opcode, "INC") == 0) {
       int dreg = atoi(tok1);
       if (tok2 != NULL) {
@@ -143,6 +164,7 @@ int main(int argc, char *argv[]) {
       } else {
         STACK_RR[dreg].value++;
       }
+      iptr++;
     } else if (strcmp(opcode, "DEC") == 0) {
       int dreg = atoi(tok1);
       if (tok2 != NULL && !STACK_RR[dreg].is_null) {
@@ -152,8 +174,10 @@ int main(int argc, char *argv[]) {
         STACK_RR[dreg].value -= 1;
       } else if (STACK_RR[dreg].is_null) {
         printf("FATAL ERROR: Attempted to decrement $R%d but $R%d is NULL!\n", dreg, dreg);
+        iptr++;
         return 1;
       }
+      iptr++;
     } else if (strcmp(opcode, "CMRR") == 0) {
       int srcreg  = atoi(tok1);
       int destreg = atoi(tok2);
@@ -163,6 +187,7 @@ int main(int argc, char *argv[]) {
           STACK_RR[destreg].is_null = false;
         }
       }
+      iptr++;
     } else if (strcmp(opcode, "COMP") == 0) {
       int val1 = atoi(tok1);
       int val2 = atoi(tok2);
@@ -170,12 +195,14 @@ int main(int argc, char *argv[]) {
       if (result == 0) {
         equal = true;
       } else { equal = false; }
+      iptr++;
     } else if (strcmp(opcode, "WAIT") == 0) {
       float seconds = atof(tok1);
       struct timespec dur;
       dur.tv_sec = (time_t)seconds;
       dur.tv_nsec = (long)((seconds - dur.tv_sec) * 1000000000L);
       nanosleep(&dur, NULL);
+      iptr++;
       continue;
     } else if (strcmp(opcode, "DPFB") == 0) {
       int y = atoi(tok1);
@@ -185,15 +212,35 @@ int main(int argc, char *argv[]) {
           displayfb[y][x] = false;
         } else { displayfb[y][x] = true; }
         render_display(backend, dpresx, dpresy, displayfb);
+        iptr++;
       } else {
         printf("VM not initialized with display. ");
         printf("Can not use DISPLAY instruction 'DPFB'! ");
         printf("Run VM with --display to enable display.\n");
         printf("VM exited with code [1]\n");
+        iptr++;
         return 1;
       }
     } else if (strcmp(opcode, "//") == 0) {
+      iptr++;
       continue;
     }
+    //printf("%d\n", iptr);
   }
+}
+
+// Helper function to set the instruction pointerr
+// after a JUMP opcode chanhes it
+void set_ip(int ip, FILE *program) {
+  char line[32];
+  int counter = 0;
+  int byte_offset = 0;
+  rewind(program);
+  while (fgets(line, sizeof(line), program)) {
+    if (counter == ip) break;
+    int ln_byte_count = strlen(line);
+    byte_offset += ln_byte_count;
+    counter++;
+  }
+  fseek(program, byte_offset, SEEK_SET);
 }
