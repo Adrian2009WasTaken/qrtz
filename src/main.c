@@ -219,7 +219,7 @@ void set_ip(int ip, FILE *program) {
   while (fgets(line, sizeof(line), program)) {
     byte_offset += strlen(line);
     counter++;
-    if (counter >= ip) break;
+    if (counter >= ip-1) break;
   }
   fseek(program, byte_offset, SEEK_SET);
 }
