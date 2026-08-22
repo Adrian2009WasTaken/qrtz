@@ -60,14 +60,7 @@ int main(int argc, char *argv[]) {
     char *tok2   = strtok(NULL, " \t\n");
     char *tok3   = strtok(NULL, " \t\n");
 
-    if (strcmp(opcode, "JPEQ") == 0) {
-      iptr = atoi(tok1);
-      equal = false;
-      if (equal) {
-        set_ip(iptr, program);
-      }
-      continue;
-    }
+    
 
     if (strcmp(opcode, "PUSH") == 0) {
       int value = atoi(tok1);
@@ -88,6 +81,13 @@ int main(int argc, char *argv[]) {
         iptr = dest;
         set_ip(iptr, program);
       }
+      continue;
+    } else if (strcmp(opcode, "JPEQ") == 0) {
+      iptr = atoi(tok1);
+      if (equal) {
+        set_ip(iptr, program);
+      }
+      equal = false;
       continue;
     } else if (strcmp(opcode, "PULL") == 0) {
       if (display) continue;
@@ -210,7 +210,7 @@ int main(int argc, char *argv[]) {
 }
 
 // Helper function to set the instruction pointerr
-// after a JUMP opcode chanhes it
+// after a JUMP opcode changes it
 void set_ip(int ip, FILE *program) {
   char line[32];
   int counter = 0;
