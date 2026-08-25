@@ -1,6 +1,16 @@
 # qrtz
 Super simple programming language I made to learn how programming languages work, but I also made it to learn more about CPU ISAs.
 
+## Showcases
+A Quartz program counts to 1M in 19 seconds.
+![Image](images/ShowcaseCountTo1M.jpg)
+
+Program draws smiley face to emulated display using ANSI backend.
+![Image](images/ShowcaseDisplayANSI.jpg)
+
+Program draws smiley face to emulated display uskng Unicode backend.
+![Image](images/ShowcaseDisplayUnicode.jpg)
+
 ## Documentation of Features and Instructions
 Features:
 - A gimmick of a display with variable resolutions that uses either ANSI escape sequences or Unicode block characters as rendering backends. Launch the qrtz virtual machine with a display using `--display x y ansi/unicode`. Note that functions that print regular text to STDOUT like PULL and PRNT will not work if display is enabled, likewise, functions like DPFB won't work if display isn't enabled.
