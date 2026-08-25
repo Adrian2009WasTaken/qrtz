@@ -1,9 +1,12 @@
 # qrtz
-Super simple programming language I made to learn how programming languages work, but I also made it to learn more about CPU ISAs (therefore I technically created a virtual machine with it's own little ISA).
+Super simple programming language I made to learn how programming languages work, but I also made it to learn more about CPU ISAs.
 
-Several opcodes are available now:
+## Documentation of Features and Instructions
+Features:
+- A gimmick of a display with variable resolutions that uses either ANSI escape sequences or Unicode block characters as rendering backends. Launch the qrtz virtual machine with a display using `--display x y ansi/unicode`. Note that functions that print regular text to STDOUT like PULL and PRNT will not work if display is enabled, likewise, functions like DPFB won't work if display isn't enabled.
+- A functioning instruction pointer mostly made for basic conditional jump implementations.
 
-```
+Instructions/Opcodes:  
 PUSH VAL REG - Sets a non-null register to a value 
 PULL REG - Reads from a register and prints its value to the console
 PRNT CHAR- Prints an ascii byte to the console
@@ -21,30 +24,30 @@ HALT EXITCODE - Stops execution and prints the exitcode given
 COMP A B - Compares values A and B to each other, if they are equal it sets the equal flag to true
 JREQ REG VAL DEST - Jumps to line DEST if the register is equal to VAL
 JPEQ DEST - Jumps to line DEST if the equal flag is true, then clears the equal flag
-```
 
-I recently added an emulated display, enabled by running the vm using `qrtz program.qz --display x y`. x & y are the display resolutions. When running with --display, console instructions like PRNT and PULL will not work. Pixels in the display are either on or off. To toggle a pixel, you'd use the `DPFB x y` instruction, toggling the pixel at that xy position.
-
-TODO:
-  Make the display behave like how a text
+## TODO:
++ Make the display behave like how a text
   editor displays text, instead of
   printing to stdout like you'd 
-  print `hello world`.
+  print `hello world` by using termios.h
+  and setting the terminal to raw mode.
 
-  MULL & DIV opcodes.
++ MULL & DIV opcodes.
 
-  Memory Management Unit + Variables
++ Memory Management Unit + Variables
 
-  Add labels.
++ Multi-file programs by preprocessing files into each other.
 
-  Add clear display instruction (CLDP)
++ Add labels using a label preprocessor that maps lables to line indexes.
+
++ Add clear display instruction (CLDP)
   that toggles all pixels in the display
   off.
 
-  Improve the PRNT function or optionally    merge PULL with PRNT.
++ Improve the PRNT function or optionally    merge PULL with PRNT.
 
-  Basic conditional jumps have been added,   however more conditional jump options      must be added: JPFN, JFZ, JFNZ and a few   others. Loops work already, but the        entire instruction pointer system should   be improved. Currently POC.
++ Basic conditional jumps have been added,   however more conditional jump options      must be added: JPFN, JFZ, JFNZ and a few   others. Loops work already, but the        entire instruction pointer system should   be improved.
 
-  Migrate display functions into display.c
+Thanks to MorganPG for improving Opcode documentation.
 
-## If you want to help/contribute, you can either do so by helping to implement something from the TODO above, or simply improving this README.
+### If you want to help/contribute, you can either do so by helping to implement something from the TODO above, or simply improving this README.
