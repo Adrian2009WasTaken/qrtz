@@ -48,6 +48,6 @@ JPEQ DEST - Jumps to line DEST if the equal flag is true, then clears the equal 
 
 + Basic conditional jumps have been added,   however more conditional jump options      must be added: JPFN, JFZ, JFNZ and a few   others. Loops work already, but the        entire instruction pointer system should   be improved.
 
-Thanks to MorganPG for improving Opcode documentation.
+Thanks to MorganPG for improving Opcode documentation and fixing the conditional jump instructions when I wasn't available.
 
-### If you want to help/contribute, you can either do so by helping to implement something from the TODO above, or simply improving this README.
+### If you want to help/contribute, you can either do so by helping to implement something from the TODO above, or simply improving this README. If you intend to contribute either to the README or the source code, please do not use AI to generate any code. This is a purely educational project and AI defeats that purpose.
