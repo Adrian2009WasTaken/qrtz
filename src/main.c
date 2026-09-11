@@ -36,7 +36,12 @@ int main(int argc, char *argv[]) {
     char name[32];
     uint16_t offset;
     uint8_t size;
-    uint8_t type;
+    
+    enum {
+      NUM,
+      STR
+    } type;
+    
   } Variable;
 
   Variable variables[256];
@@ -227,9 +232,9 @@ int main(int argc, char *argv[]) {
       variables[var_count].offset = total_offset;
       strcpy(variables[var_count].name, tok1 + 1);
       if (strcmp(tok2, "NUM") == 0) {
-        variables[var_count].type = 0;
+        variables[var_count].type = NUM;
       } else if (strcmp(tok2, "STR") == 0) {
-        variables[var_count].type = 1;
+        variables[var_count].type = STR;
       }
 
       memcpy(memory + total_offset, tok4, sizeof(tok4) + 1);
