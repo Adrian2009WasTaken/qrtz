@@ -28,6 +28,22 @@ int main(int argc, char *argv[]) {
 
   GRegister STACK_RR[16] = { [0 ... 15] = { .value = 0, .is_null = true } };
 
+  // Create memory stack of 8KB and a struct of what defines
+  // a variable.
+  int memory[8192];
+
+  typedef struct {
+    char name[32];
+    uint16_t offset;
+    uint8_t size;
+    uint8_t type;
+  } Variable;
+
+  Variable variables[256];
+
+  uint8_t var_count = 0;
+  uint16_t total_offset = 0;
+
   // Create an emulated boolean display
   // framebuffer of variable res ONLY if vm is run
   // with --display tag.
@@ -59,7 +75,7 @@ int main(int argc, char *argv[]) {
     char *tok1   = strtok(NULL, " \t\n");
     char *tok2   = strtok(NULL, " \t\n");
     char *tok3   = strtok(NULL, " \t\n");
-
+    char *tok4   = strtok(NULL, " \t\n");
     
 
     if (strcmp(opcode, "PUSH") == 0) {
@@ -205,6 +221,19 @@ int main(int argc, char *argv[]) {
       }
     } else if (strcmp(opcode, "//") == 0) {
       continue;
+    } else if (strcmp(opcode, "VAR") == 0) {
+      uint8_t var_size = atoi(tok3);
+      var_count++;
+      variables[var_count].offset = total_offset;
+      strcpy(variables[var_count].name, tok1 + 1);
+      if (strcmp(tok2, "NUM") == 0) {
+        variables[var_count].type = 0;
+      } else if (strcmp(tok2, "STR") == 0) {
+        variables[var_count].type = 1;
+      }
+
+      memcpy(memory + total_offset, tok4, sizeof(tok4) + 1);
+      total_offset += var_size;
     }
   }
 }
